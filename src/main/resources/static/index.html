@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>포트원 결제 테스트</title>
+    <!-- jQuery 로드 (Load jQuery) -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <!-- Iamport 결제 스크립트 로드 (Load Iamport payment script) -->
+    <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<h1>포트원 결제 테스트</h1>
+<p>아래 버튼을 클릭하면 결제창이 뜨며, 결제 테스트가 진행됩니다.</p>
+<button id="payButton" type="button">결제 테스트</button>
+
+<script>
+    // 문서가 준비되면 실행 (Run when the document is ready)
+    $(document).ready(function() {
+        $("#payButton").click(function() {
+            proceedPayment();
+        });
+    });
+
+    function proceedPayment() {
+        // 포트원 결제 모듈 초기화 (Initialize the payment module with your merchant code)
+        IMP.init("imp66110156");
+
+        // 결제 요청 파라미터 설정 (Set payment request parameters)
+        IMP.request_pay({
+            pg: "kakaopay",           // 테스트용 PG 설정 (Test PG configuration; change for production)
+            pay_method: "card",        // Payment method: card
+            merchant_uid: "ORD20231030-000004", // 주문 고유번호 (Unique order ID)
+            name: "정성호",             // 상품명 (Product name)
+            amount: "2"                // 결제 금액 (Payment amount)
+        }, function(rsp) {             // 결제 결과 콜백 함수 (Callback function after payment request)
+            if (rsp.success) {
+                // 결제 성공 시: 결제 관련 정보 출력 (On success, show payment info)
+                alert("결제 성공!\nimp_uid: " + rsp.imp_uid + "\nmerchant_uid: " + rsp.merchant_uid);
+
+                // 백엔드 검증 요청 (Send request to the backend for payment verification)
+                $.ajax({
+                    url: "/api/payment/verify",  // 스프링 부트 백엔드 엔드포인트 (Spring Boot backend endpoint)
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        imp_uid: rsp.imp_uid,
+                        merchant_uid: rsp.merchant_uid
+                    }),
+                    success: function(result) {
+                        if(result.verified) {
+                            alert("결제 검증 성공!"); // Payment verification successful!
+                        } else {
+                            alert("결제 검증 실패: " + result.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("백엔드 검증 요청 실패: " + error);
+                    }
+                });
+            } else {
+                // 결제 실패 시 오류 메시지 출력 (On failure, show error message)
+                var msg = "결제에 실패하였습니다.\n에러내용: " + rsp.error_msg;
+                alert(msg);
+            }
+        });
+    }
+</script>
+</body>
+</html>
