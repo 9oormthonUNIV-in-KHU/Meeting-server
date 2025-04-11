@@ -2,54 +2,99 @@
 <html lang="ko">
 <head>
     <meta charset="utf-8">
-    <title>포트원 결제 테스트</title>
-    <!-- jQuery 로드 (Load jQuery) -->
+    <title>소개팅 크레딧 결제하기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- jQuery 로드 -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-    <!-- Iamport 결제 스크립트 로드 (Load Iamport payment script) -->
+    <!-- Iamport 결제 스크립트 로드 -->
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        button {
-            padding: 10px 20px;
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        p {
+            margin-bottom: 20px;
+            color: #666;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
             font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
+        .btn:active {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-<h1>포트원 결제 테스트</h1>
-<p>아래 버튼을 클릭하면 결제창이 뜨며, 결제 테스트가 진행됩니다.</p>
-<button id="payButton" type="button">결제 테스트</button>
+<div class="container">
+    <h1>소개팅 크레딧 결제하기</h1>
+    <p>원하는 금액을 선택해주세요</p>
+    <button id="payButton1000" class="btn">1000원</button>
+    <button id="payButton5000" class="btn">5000원</button>
+    <button id="payButton10000" class="btn">10000원</button>
+</div>
 
 <script>
-    // 문서가 준비되면 실행 (Run when the document is ready)
-    $(document).ready(function() {
-        $("#payButton").click(function() {
-            proceedPayment();
-        });
-    });
+    // 오늘 날짜와 임의의 4자리 숫자로 고유 주문번호 생성 함수
+    function generateMerchantUid() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const dateStr = `${year}${month}${day}`;
+        // 1000부터 9999 사이의 랜덤 4자리 숫자 생성
+        const randomNum = Math.floor(Math.random() * 9000) + 1000;
+        return `ORD${dateStr}-${randomNum}`;
+    }
 
-    function proceedPayment() {
-        // 포트원 결제 모듈 초기화 (Initialize the payment module with your merchant code)
+    function proceedPayment(amount) {
+        // 포트원 결제 모듈 초기화
         IMP.init("imp66110156");
 
-        // 결제 요청 파라미터 설정 (Set payment request parameters)
-        IMP.request_pay({
-            pg: "kakaopay",           // 테스트용 PG 설정 (Test PG configuration; change for production)
-            pay_method: "card",        // Payment method: card
-            merchant_uid: "ORD20231030-000004", // 주문 고유번호 (Unique order ID)
-            name: "정성호",             // 상품명 (Product name)
-            amount: "2"                // 결제 금액 (Payment amount)
-        }, function(rsp) {             // 결제 결과 콜백 함수 (Callback function after payment request)
-            if (rsp.success) {
-                // 결제 성공 시: 결제 관련 정보 출력 (On success, show payment info)
-                alert("결제 성공!\nimp_uid: " + rsp.imp_uid + "\nmerchant_uid: " + rsp.merchant_uid);
+        // 오늘 날짜와 임의의 숫자를 기반으로 고유 주문번호 생성
+        let merchantUid = generateMerchantUid();
 
-                // 백엔드 검증 요청 (Send request to the backend for payment verification)
+        IMP.request_pay({
+            pg: "kakaopay",
+            pay_method: "card",
+            merchant_uid: merchantUid,
+            name: "결제 금액: " + amount + "원",
+            amount: amount.toString()
+        }, function(rsp) {
+            if (rsp.success) {
+                alert("결제 성공!\nimp_uid: " + rsp.imp_uid + "\nmerchant_uid: " + rsp.merchant_uid);
+                // 백엔드 검증 요청
                 $.ajax({
-                    url: "/api/payment/verify",  // 스프링 부트 백엔드 엔드포인트 (Spring Boot backend endpoint)
+                    url: "/api/payment/verify",
                     method: "POST",
                     contentType: "application/json",
                     data: JSON.stringify({
@@ -58,7 +103,7 @@
                     }),
                     success: function(result) {
                         if(result.verified) {
-                            alert("결제 검증 성공!"); // Payment verification successful!
+                            alert("결제 검증 성공!");
                         } else {
                             alert("결제 검증 실패: " + result.message);
                         }
@@ -68,12 +113,23 @@
                     }
                 });
             } else {
-                // 결제 실패 시 오류 메시지 출력 (On failure, show error message)
                 var msg = "결제에 실패하였습니다.\n에러내용: " + rsp.error_msg;
                 alert(msg);
             }
         });
     }
+
+    $(document).ready(function() {
+        $("#payButton1000").click(function() {
+            proceedPayment(1000);
+        });
+        $("#payButton5000").click(function() {
+            proceedPayment(5000);
+        });
+        $("#payButton10000").click(function() {
+            proceedPayment(10000);
+        });
+    });
 </script>
 </body>
 </html>
