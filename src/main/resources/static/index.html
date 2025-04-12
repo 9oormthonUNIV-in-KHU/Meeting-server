@@ -77,44 +77,64 @@
     }
 
     function proceedPayment(amount) {
-        // 포트원 결제 모듈 초기화
-        IMP.init("imp66110156");
-
-        // 오늘 날짜와 임의의 숫자를 기반으로 고유 주문번호 생성
+        // 고유 주문번호 생성
         let merchantUid = generateMerchantUid();
 
-        IMP.request_pay({
-            pg: "kakaopay",
-            pay_method: "card",
-            merchant_uid: merchantUid,
-            name: "결제 금액: " + amount + "원",
-            amount: amount.toString()
-        }, function(rsp) {
-            if (rsp.success) {
-                alert("결제 성공!\nimp_uid: " + rsp.imp_uid + "\nmerchant_uid: " + rsp.merchant_uid);
-                // 백엔드 검증 요청
-                $.ajax({
-                    url: "/api/payment/verify",
-                    method: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({
-                        imp_uid: rsp.imp_uid,
-                        merchant_uid: rsp.merchant_uid
-                    }),
-                    success: function(result) {
-                        if(result.verified) {
-                            alert("결제 검증 성공!");
-                        } else {
-                            alert("결제 검증 실패: " + result.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert("백엔드 검증 요청 실패: " + error);
+        // 결제 요청 정보를 먼저 백엔드에 저장 (/api/payment/request)
+        $.ajax({
+            url: "/api/payment/request",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                merchantUid: merchantUid,
+                amount: amount
+            }),
+            success: function(response) {
+                console.log("결제 요청 정보 저장 성공: " + response);
+
+                // 결제 모듈 초기화
+                IMP.init("imp66110156");
+
+                // iamport 결제 요청
+                IMP.request_pay({
+                    pg: "kakaopay",
+                    pay_method: "card",
+                    merchant_uid: merchantUid,
+                    name: "결제 금액: " + amount + "원",
+                    amount: amount.toString()
+                }, function(rsp) {
+                    if (rsp.success) {
+                        alert("결제 성공!\nimp_uid: " + rsp.imp_uid + "\nmerchant_uid: " + rsp.merchant_uid);
+
+                        // 결제 성공 후 백엔드에 결제 검증 요청 (/api/payment/verify)
+                        $.ajax({
+                            url: "/api/payment/verify",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                                impUid: rsp.imp_uid,
+                                merchantUid: rsp.merchant_uid
+                            }),
+                            success: function(result) {
+                                if (result.verified) {
+                                    alert("결제 검증 성공!");
+                                } else {
+                                    alert("결제 검증 실패: " + result.message);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                var response = JSON.parse(xhr.responseText);
+                                alert("백엔드 검증 요청 실패: " + response.message);
+                            }
+                        });
+                    } else {
+                        var msg = "결제에 실패하였습니다.\n에러내용: " + rsp.error_msg;
+                        alert(msg);
                     }
                 });
-            } else {
-                var msg = "결제에 실패하였습니다.\n에러내용: " + rsp.error_msg;
-                alert(msg);
+            },
+            error: function(xhr, status, error) {
+                alert("결제 요청 정보 저장 실패: " + error);
             }
         });
     }
