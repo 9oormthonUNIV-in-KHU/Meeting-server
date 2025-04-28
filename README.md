@@ -6,13 +6,13 @@
 
 💻 Convention 💻
 🌲 Branch Convention 🌲
-기본 브랜치 설정
+##기본 브랜치 설정##
 
 dev: 기본 개발 브랜치 (기능 개발 및 통합 테스트용)
 
 main: 최종 배포 브랜치 (운영 반영)
 
-작업 순서
+##작업 순서##
 
 작업할 이슈 생성 (Jira, GitHub Issues 등)
 
@@ -44,7 +44,7 @@ dev 브랜치 대상으로 PR 생성
 
 Merge 완료되면 브랜치 삭제
 
-🧑‍💻 Code Convention 🧑‍💻
+##🧑‍💻 Code Convention 🧑‍💻##
 네이밍 규칙 (Spring에 맞게)
 
 클래스명: 파스칼케이스 (UserService, LoginController, MemberRepository)
@@ -57,7 +57,7 @@ Merge 완료되면 브랜치 삭제
 
 상수명: 전부 대문자 + 언더스코어 (MAX_SIZE, DEFAULT_TIMEOUT)
 
-코딩 스타일
+##코딩 스타일##
 
 @Service, @Controller, @Repository 명확히 구분
 
@@ -67,7 +67,7 @@ Layer별 (Controller → Service → Repository) 호출 구조 유지
 
 예외(Exception)는 커스텀 Exception 클래스를 만들어 사용 (UserNotFoundException)
 
-💬 Issue Convention 💬
+##💬 Issue Convention 💬##
 Issue 종류
 
 ✅ Feature (기능 추가)
@@ -90,7 +90,7 @@ TODO: 해야 할 작업 체크리스트
 
 ETC: 논의가 필요한 내용
 
-🫷 PR Convention 🫸
+##🫷 PR Convention 🫸##
 🔗 관련 이슈
 
 연관된 이슈 번호 (#111) 링크
