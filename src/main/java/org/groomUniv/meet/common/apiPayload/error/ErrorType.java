@@ -1,4 +1,4 @@
-package org.groomUniv.meet.core.support.error;
+package org.groomUniv.meet.common.apiPayload.error;
 
 import org.springframework.http.HttpStatus;
 

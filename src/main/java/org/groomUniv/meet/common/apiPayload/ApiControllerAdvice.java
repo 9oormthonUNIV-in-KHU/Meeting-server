@@ -1,9 +1,9 @@
-package org.groomUniv.meet.core.support.presentation;
+package org.groomUniv.meet.common.apiPayload;
 
 import lombok.extern.log4j.Log4j2;
-import org.groomUniv.meet.core.support.error.CoreException;
-import org.groomUniv.meet.core.support.error.GlobalErrorType;
-import org.groomUniv.meet.core.support.response.ApiResponse;
+import org.groomUniv.meet.common.apiPayload.error.CoreException;
+import org.groomUniv.meet.common.apiPayload.error.GlobalErrorType;
+import org.groomUniv.meet.common.apiPayload.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

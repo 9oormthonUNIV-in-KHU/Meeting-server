@@ -1,4 +1,4 @@
-package org.groomUniv.meet.core.support.error;
+package org.groomUniv.meet.common.apiPayload.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

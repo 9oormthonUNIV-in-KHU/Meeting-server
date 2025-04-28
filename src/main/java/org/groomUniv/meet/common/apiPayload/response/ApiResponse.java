@@ -1,7 +1,7 @@
-package org.groomUniv.meet.core.support.response;
+package org.groomUniv.meet.common.apiPayload.response;
 
-import org.groomUniv.meet.core.support.error.ErrorMessage;
-import org.groomUniv.meet.core.support.error.ErrorType;
+import org.groomUniv.meet.common.apiPayload.error.ErrorMessage;
+import org.groomUniv.meet.common.apiPayload.error.ErrorType;
 
 public record ApiResponse<T>(ResultType result, T data, ErrorMessage error) {
 
