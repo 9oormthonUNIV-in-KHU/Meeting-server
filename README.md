@@ -4,118 +4,109 @@
 
 ![Image](https://github.com/user-attachments/assets/9e008b45-300d-47b2-8c1a-d4e04b7208f3)
 
-💻 Convention 💻
-🌲 Branch Convention 🌲
-##기본 브랜치 설정##
+## 💻 Convention 💻
 
-dev: 기본 개발 브랜치 (기능 개발 및 통합 테스트용)
+## 🌲 Branch Convention 🌲
+1. **기본 브랜치 설정**
+    
+    - dev: 기본 브랜치로, 기능을 개발하고 안정화된 브랜치
+2. **작업 순서**
+    
+    1. 작업할 이슈 작성
+    
+    예) #111 사용자 로그인 기능 구현
+    
+    2. 작업 브랜치 생성
+        - 기능 개발: feature/#[이슈번호]-title
+            - ex) feature/#111-login
+        - 버그 수정: fix/#[이슈번호]-title
+            - ex) fix/#111-login
+        - 리팩토링: refactor/#[이슈번호]-title
+            - ex) refactor/#111-login
+    3. **생성한 브랜치에서 작업 수행** 
+    4. **원격 저장소에 작업 브랜치 푸시** 
+    5. **Pull Request 생성**
+    - develop 브랜치 대상으로 Pull Request 생성
+    - 리뷰어의 리뷰를 받은 후 PR을 승인 받고 develop 브랜치에 병합 후 브랜치 삭제
+---
+## 🧑‍💻 Code Convention 🧑‍💻
 
-main: 최종 배포 브랜치 (운영 반영)
+**네이밍 규칙**
 
-##작업 순서##
-
-작업할 이슈 생성 (Jira, GitHub Issues 등)
-
-예: #111 사용자 로그인 API 구현
-
-작업 브랜치 생성
-
-기능 개발: feature/#이슈번호-title
-
-ex) feature/#111-login-api
-
-버그 수정: fix/#이슈번호-title
-
-ex) fix/#111-login-nullpoint
-
-리팩토링: refactor/#이슈번호-title
-
-ex) refactor/#111-optimize-query
-
-생성한 브랜치에서 기능 개발 및 커밋
-
-원격 저장소에 작업 브랜치 Push
-
-Pull Request 생성
-
-dev 브랜치 대상으로 PR 생성
-
-리뷰 승인 후 dev 브랜치에 Merge
-
-Merge 완료되면 브랜치 삭제
-
-##🧑‍💻 Code Convention 🧑‍💻##
-네이밍 규칙 (Spring에 맞게)
-
-클래스명: 파스칼케이스 (UserService, LoginController, MemberRepository)
-
-메소드명: 카멜케이스 (findUserById, savePost, updateProfile)
-
-변수명: 카멜케이스 (userName, userId, postList)
-
-패키지명: 모두 소문자, 복수형 사용 X (controller, service, repository, domain)
-
-상수명: 전부 대문자 + 언더스코어 (MAX_SIZE, DEFAULT_TIMEOUT)
-
-##코딩 스타일##
-
+- **변수, 함수, 메소드 **: 카멜케이스 (예: userName)
+- **클래스 , exception **: 파스칼케이스 (예: UserProfile)
+**코딩스타일**
 @Service, @Controller, @Repository 명확히 구분
 
 DTO, Entity, Request/Response 객체 명시적으로 구분 (LoginRequest, LoginResponse)
 
 Layer별 (Controller → Service → Repository) 호출 구조 유지
 
-예외(Exception)는 커스텀 Exception 클래스를 만들어 사용 (UserNotFoundException)
 
-##💬 Issue Convention 💬##
-Issue 종류
+---
+## 💬 Issue Convention 💬
+1. **Feature**: 기능 추가 시 작성
+    - **Issue**: ✅ Feature
+    - **내용**: 작업하고자 하는 기능을 입력
+    - **TODO**:
+        - [ ]  구현 내용 입력
+    - **ETC**: 논의가 필요한 사항이나 참고 내용 작성
+2. **Fix/Bug**: 오류/버그 발생 시 작성
+    - **Issue**: 🐞 Fix / Bug
+    - **내용**: 발생한 문제 설명
+    - **원인 파악**
+    - **해결 방안**
+    - **결과 확인**
+    - **ETC**: 논의할 사항 작성
+3. **Refactor**: 리팩토링 작업 시 작성
+    - **Issue**: ♻️ Refactor
+    - **내용**: 리팩토링이 필요한 부분 작성
+    - **Before**: 변경 전 상태 및 이유 설명
+    - **After**: 변경 후 예상되는 구조 설명
+    - **TODO**:
+        - [ ]  변경 내용 입력
+    - **ETC**: 논의할 사항 작성
+---
+## 🫷 PR Convention 🫸
 
-✅ Feature (기능 추가)
+**🔗 관련 이슈**
 
-🐞 Fix (버그 수정)
+연관된 이슈 번호를 적어주세요. (예: #123)
 
-♻️ Refactor (리팩토링)
+---
 
-📚 Docs (문서 작성 및 수정)
+**📌 PR 요약**
 
-⚙️ Chore (빌드 설정, 환경 설정 등)
+PR에 대한 간략한 설명을 작성해주세요.
 
-Issue 작성 템플릿
+(예: 해당 변경 사항의 목적이나 주요 내용)
 
-제목: [타입] 이슈 제목
+---
 
-내용: 이슈 상세 설명
+**📑 작업 내용**
 
-TODO: 해야 할 작업 체크리스트
+작업의 세부 내용을 작성해주세요.
 
-ETC: 논의가 필요한 내용
+1. 작업 내용 1
+2. 작업 내용 2
+3. 작업 내용 3
 
-##🫷 PR Convention 🫸##
-🔗 관련 이슈
+---
 
-연관된 이슈 번호 (#111) 링크
+**스크린샷 (선택)**
 
-📌 PR 요약
+---
 
-PR에 대한 간단한 요약
+**💡 추가 참고 사항**
 
-ex) "로그인 API 구현 및 인증 예외 처리 추가"
+PR에 대해 추가적으로 논의하거나 참고해야 할 내용을 작성해주세요. (예: 변경사항이 코드베이스에 미치는 영향, 테스트 방법 등)
 
-📑 작업 내용
+---
+## 🙏 Commit Convention 🙏
 
-작업한 세부사항 리스트업
-
-회원가입 기능 추가
-
-로그인 검증 로직 수정
-
-로그인 실패시 에러 반환 추가
-
-🖼️ 스크린샷 (선택)
-
-💡 추가 참고 사항
-
-PR에 대한 논의사항
-
-로직 설명이 필요한 부분
-
+- feature : 새로운 기능이 추가되는 경우
+- fix : bug가 수정되는 경우
+- docs :  문서에 변경 사항이 있는 경우
+- style : 코드 스타일 변경하는 경우 (공백 제거 등)
+- refactor : 코드 리팩토링하는 경우 (기능 변경 없이 구조 개선)
+- design : UI 디자인을 변경하는 경우
