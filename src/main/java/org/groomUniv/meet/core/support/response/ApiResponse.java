@@ -1,6 +1,7 @@
 package org.groomUniv.meet.core.support.response;
 
-import javax.lang.model.type.ErrorType;
+import org.groomUniv.meet.core.support.error.ErrorMessage;
+import org.groomUniv.meet.core.support.error.ErrorType;
 
 public record ApiResponse<T>(ResultType result, T data, ErrorMessage error) {
 
