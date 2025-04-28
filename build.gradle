@@ -21,7 +21,10 @@ configurations {
 
 repositories {
 	mavenCentral()
+	// 포트원(구 아임포트)은 maven 기반으로 의존성을 추가한다. (여기에 jitpack.io를 추가하면 gradle에서도 iamport라이브러리를 추가할 수 있다.)
+	maven { url 'https://jitpack.io' }
 }
+
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -34,9 +37,15 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+
 	// swagger 설정
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+	// 포트원
+	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
+
 }
+
 
 tasks.named('test') {
 	useJUnitPlatform()
