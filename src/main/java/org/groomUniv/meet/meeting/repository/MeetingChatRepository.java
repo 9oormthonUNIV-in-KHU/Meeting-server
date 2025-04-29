@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface MeetingChatRepository extends JpaRepository<MeetingChat, Long> {
-    Optional<MeetingChat> findByMeetingId(Long meetingId);
+    Optional<MeetingChat> findBymeetingChatId(Long meetingChatId);
 }

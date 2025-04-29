@@ -18,7 +18,7 @@ public class Meeting {
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long meeting_id;
+    private Long meetingId;
 
 @CreatedDate
     private LocalDateTime createdAt;

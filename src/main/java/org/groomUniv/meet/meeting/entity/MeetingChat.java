@@ -15,7 +15,7 @@ import java.util.Date;
 public class MeetingChat {
 
 @Id@GeneratedValue
-    private Long messageId;
+    private Long meetingChatId;
 
 @CreatedDate
     private LocalDateTime createdAt;
