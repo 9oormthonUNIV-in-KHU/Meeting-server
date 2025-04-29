@@ -15,12 +15,12 @@ public class Member {
 private Long memberId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "preference_id")  // User 테이블이 외래키를 가진다
+    @JoinColumn(name = "preference_id")
     private MemberPreference memberPreference;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id") // User 테이블에 school_id 외래키 컬럼 생긴다
+    @JoinColumn(name = "school_id")
     private School school;
 
 

@@ -1,13 +1,18 @@
 package org.groomUniv.meet.blinddate.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.groomUniv.meet.oauth.entity.Member;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@Entity
+@Data
+@NoArgsConstructor
+@Table(name = "blind_date")
 public class BlindDate {
 
 @Id@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,6 +2,7 @@ package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.groomUniv.meet.oauth.enums.*;
 
 @Data
 @Entity
@@ -20,4 +21,12 @@ private String desired_school;
 private String desired_major;
 private String additional_criteria;
 
+// enum타입으로 받아야할 것들
+private BodyType bodyType;
+private Drinking drinking;
+private Hobby hobby;
+private Mbti mbti;
+private Religion religion;
+private Smoke smoke;
+private Style style;
 }

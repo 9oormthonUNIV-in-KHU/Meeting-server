@@ -13,8 +13,9 @@ import java.util.List;
 public class School {
 @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long school_id;
-
+// 학교이름
 private String name;
+// 학과
 private String domain;
 
     @OneToMany(mappedBy = "school", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

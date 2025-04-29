@@ -13,7 +13,7 @@ public class BlindDateChat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long messageId;
+    private Long blindDataChatId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blind_date_id")
