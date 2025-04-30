@@ -2,11 +2,12 @@ package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Entity
-@Data
+@Getter
 @Table(name = "member")
 public class Member {
 
@@ -14,14 +15,14 @@ public class Member {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long memberId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "preference_id")
-    private MemberPreference memberPreference;
+@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+@JoinColumn(name = "preference_id")
+private MemberPreference memberPreference;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "school_id")
-    private School school;
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "school_id")
+private School school;
 
 
 private String email;

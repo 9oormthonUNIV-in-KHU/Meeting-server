@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface BlindDateChatRepository extends JpaRepository<BlindDateChat, Long> {
 
     // 채팅 ID로 채팅 검색
-    Optional<BlindDateChat> findByBlindDataChatId(Long blindDataChatId);
+    Optional<BlindDateChat> findById(Long blindDataChatId);
 
     // 특정 블라인드 채팅에 속한 모든 채팅 시간순으로
     List<BlindDateChat> findAllByBlindDateOrderByTimestampAsc(BlindDate blindDate);

@@ -3,31 +3,29 @@ package org.groomUniv.meet.meeting.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.groomUniv.meet.common.entity.BaseEntity;
 import org.groomUniv.meet.oauth.entity.Member;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Data
 @NoArgsConstructor
-public class MeetingChat {
+public class MeetingChat extends BaseEntity {
 
-@Id@GeneratedValue
+    @Id
+    @GeneratedValue
     private Long meetingChatId;
 
-@CreatedDate
-    private LocalDateTime createdAt;
+    private String message;
 
-private String message;
-
-private String senderId;
-
+    private String senderId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id")
-private Meeting meeting;
+    private Meeting meeting;
 
 }
 // 생성 가이드라인

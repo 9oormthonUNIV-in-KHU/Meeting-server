@@ -2,16 +2,18 @@ package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import org.groomUniv.meet.oauth.enums.*;
 
-@Data
+@Getter
 @Entity
 public class MemberPreference {
-@Id@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long preference_id;
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private Long preference_id;
 
-    @OneToOne(mappedBy = "memberPreference", fetch = FetchType.LAZY)
-    private Member member;
+@OneToOne(mappedBy = "memberPreference", fetch = FetchType.LAZY)
+private Member member;
 
 private Long desired_age_min;
 private Long desired_age_max;

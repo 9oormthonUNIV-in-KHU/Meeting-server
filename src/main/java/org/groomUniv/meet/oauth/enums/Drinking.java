@@ -1,6 +1,9 @@
 package org.groomUniv.meet.oauth.enums;
 
-public enum Drinking {
+import lombok.AllArgsConstructor;
 
-안함,가끔,자주
+@AllArgsConstructor
+public enum Drinking {
+NEVER("안함"),SOMETIMES("가끔 마심"),OFTEN("자주");
+private final String description;
 }
