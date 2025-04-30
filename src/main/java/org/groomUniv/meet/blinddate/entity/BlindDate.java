@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Table(name = "blind_date")
+@EntityListeners(AuditingEntityListener.class)
 public class BlindDate {
 
 @Id@GeneratedValue(strategy = GenerationType.IDENTITY)
