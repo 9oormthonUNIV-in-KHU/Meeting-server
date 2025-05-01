@@ -14,11 +14,11 @@ import java.util.Optional;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final IamportClient iamportClient;
+    //private final IamportClient iamportClient;
 
-    public PaymentService(PaymentRepository paymentRepository, IamportClient iamportClient) {
+    public PaymentService(PaymentRepository paymentRepository/*, IamportClient iamportClient*/) {
         this.paymentRepository = paymentRepository;
-        this.iamportClient = iamportClient;
+        //this.iamportClient = iamportClient;
     }
 
     // 결제 요청 시 DB에 결제 정보를 저장
@@ -42,22 +42,22 @@ public class PaymentService {
         Payment payment = optPayment.get();
         System.out.println("payment.get() : " + payment);
 
-        try {
-            // 실제 일어난 결제 정보(iamport API를 통해 결제 상세정보 조회)
-            IamportResponse<com.siot.IamportRestClient.response.Payment> response = iamportClient.paymentByImpUid(impUid);
-            com.siot.IamportRestClient.response.Payment paymentData = response.getResponse();
-
-            // 결제 신청 금액과 결제가 된 금액을 비교
-            if (paymentData.getAmount().compareTo(payment.getAmount()) == 0) {
-                payment.setStatus("VERIFIED");
-                payment.setImpUid(impUid);
-                payment.setVerifiedTime(LocalDateTime.now());
-                paymentRepository.save(payment);
-                return true;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // 실제 일어난 결제 정보(iamport API를 통해 결제 상세정보 조회)
+//            IamportResponse<com.siot.IamportRestClient.response.Payment> response = iamportClient.paymentByImpUid(impUid);
+//            com.siot.IamportRestClient.response.Payment paymentData = response.getResponse();
+//
+//            // 결제 신청 금액과 결제가 된 금액을 비교
+//            if (paymentData.getAmount().compareTo(payment.getAmount()) == 0) {
+//                payment.setStatus("VERIFIED");
+//                payment.setImpUid(impUid);
+//                payment.setVerifiedTime(LocalDateTime.now());
+//                paymentRepository.save(payment);
+//                return true;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         // 검증에 실패하면 상태 업데이트 (원하는 로직에 맞게 처리)
         payment.setStatus("FAILED");
