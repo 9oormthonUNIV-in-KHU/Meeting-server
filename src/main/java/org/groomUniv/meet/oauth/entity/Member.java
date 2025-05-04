@@ -1,9 +1,14 @@
 package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.groomUniv.meet.oauth.enums.Role;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Entity
@@ -38,4 +43,9 @@ private String biography;
 private String major;
 
 private boolean emailVerified;
+
+@ElementCollection(fetch = FetchType.EAGER)
+@Enumerated(EnumType.STRING)
+private List<Role> roles = new ArrayList<>();
+
 }
