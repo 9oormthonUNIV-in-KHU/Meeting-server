@@ -52,11 +52,15 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return JwtToken.builder()
-                .grantType("Bearer")    // 인증 방식으로 Bearer를 설정
-                .accessToken(accessToken)   // 생성한 accessToken을 accessToken으로 설정
-                .refreshToken(refreshToken) // 생성한 refreshToken을 refreshToken으로 설정
-                .build();   //JwtToken 객체를 빌드하여 반환
+        return new JwtToken("Bearer", accessToken, refreshToken);
+
+//JwtToken DTO를 record로 변경했기 때문에 아래처럼 쓰지 않아도 됩니다.
+//        return JwtToken.builder()
+//                .grantType("Bearer")    // 인증 방식으로 Bearer를 설정
+//                .accessToken(accessToken)   // 생성한 accessToken을 accessToken으로 설정
+//                .refreshToken(refreshToken) // 생성한 refreshToken을 refreshToken으로 설정
+//                .build();   //JwtToken 객체를 빌드하여 반환
+
     }
 
     //JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내기
