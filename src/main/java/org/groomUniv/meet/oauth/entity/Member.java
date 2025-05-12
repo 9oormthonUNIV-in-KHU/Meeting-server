@@ -1,10 +1,7 @@
 package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.groomUniv.meet.oauth.enums.Role;
 
 import java.util.ArrayList;
@@ -14,6 +11,8 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "member")
+@Builder
+@AllArgsConstructor
 public class Member {
 
 @Id

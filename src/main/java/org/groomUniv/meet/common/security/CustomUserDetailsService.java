@@ -27,9 +27,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPassword())
-                .roles(member.getRoles().stream()
-                        .map(Enum::name)
-                        .toArray(String[]::new))
+//                .roles(member.getRoles().stream()
+//                        .map(Enum::name)
+//                        .toArray(String[]::new))
                 .build();
     }
 }
