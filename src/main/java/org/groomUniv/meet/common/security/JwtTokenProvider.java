@@ -20,12 +20,38 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 60 * 1000L;       // 1시간
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 1주일
+    long now = (new Date()).getTime();
     private final Key key;
+
 
     //application.yml에 저장한 secret값을 가져와서 key에 저장하기
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);    // secretKey (Base64로 인코딩된 문자열)를 디코딩하여 byte 배열로 변환
         this.key = Keys.hmacShaKeyFor(keyBytes);    // 디코딩된 byte 배열을 사용하여 HMAC-SHA 알고리즘에 맞는 암호화 키 생성
+    }
+
+    //Access Token 생성하기
+    public String createAccessToken(String name, String authorities) {
+        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME); // 1시간
+
+        return Jwts.builder()     // JWT 토큰을 생성하는 빌더 패턴
+                .setSubject(name)   // 토큰의 subject를 인증된 사용자 이름으로 설정
+                .claim("auth", authorities)     // auth 라는 키로 사용자의 권한 정보 저장
+                .setExpiration(accessTokenExpiresIn)    // 만료시간 설정(1시간)
+                .signWith(key, SignatureAlgorithm.HS256)    // HS256 알고리즘을 이용해 서명
+                .compact();     //토큰을 하나의 문자열로 생성
+    }
+
+    //Refresh Token 생성하기
+    public String createRefreshToken() {
+        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
+
+        return Jwts.builder()
+                .setExpiration(refreshTokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
     }
 
 
@@ -35,32 +61,9 @@ public class JwtTokenProvider {
                 .map(GrantedAuthority::getAuthority)    // 권한을 String으로 추출
                 .collect(Collectors.joining(", ")); // ","로 구분된 문자열로 결합
 
-        long now = (new Date()).getTime();  //현재시간
+        String name = authentication.getName();
 
-        //Access Token 생성하기
-        Date accessTokenExpiresIn = new Date(now + 3600000); // 1시간
-        String accessToken = Jwts.builder()     // JWT 토큰을 생성하는 빌더 패턴
-                .setSubject(authentication.getName())   // 토큰의 subject를 인증된 사용자 이름으로 설정
-                .claim("auth", authorities)     // auth 라는 키로 사용자의 권한 정보 저장
-                .setExpiration(accessTokenExpiresIn)    // 만료시간 설정(1시간)
-                .signWith(key, SignatureAlgorithm.HS256)    // HS256 알고리즘을 이용해 서명
-                .compact();     //토큰을 하나의 문자열로 생성
-
-        //Refresh Token 생성하기
-        String refreshToken = Jwts.builder()
-                .setExpiration(new Date(now + 604800000)) // 만료시간 1주일
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
-
-        return new JwtToken("Bearer", accessToken, refreshToken);
-
-//JwtToken DTO를 record로 변경했기 때문에 아래처럼 쓰지 않아도 됩니다.
-//        return JwtToken.builder()
-//                .grantType("Bearer")    // 인증 방식으로 Bearer를 설정
-//                .accessToken(accessToken)   // 생성한 accessToken을 accessToken으로 설정
-//                .refreshToken(refreshToken) // 생성한 refreshToken을 refreshToken으로 설정
-//                .build();   //JwtToken 객체를 빌드하여 반환
-
+        return new JwtToken("Bearer", createAccessToken(name, authorities), createRefreshToken());
     }
 
     //JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내기
