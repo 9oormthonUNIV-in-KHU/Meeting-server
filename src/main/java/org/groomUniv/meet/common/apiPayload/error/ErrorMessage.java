@@ -14,4 +14,9 @@ public class ErrorMessage {
         this.message = errorType.getMessage();
     }
 
+    public ErrorMessage(String code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
 }

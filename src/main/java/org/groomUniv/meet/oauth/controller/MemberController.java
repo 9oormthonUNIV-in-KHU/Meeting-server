@@ -25,14 +25,17 @@ public class MemberController {
             JwtToken jwtToken = memberService.login(loginRequest.email(), loginRequest.password());
             return ApiResponse.success(jwtToken);
         }catch (Exception e){
-            return ApiResponse.error(GlobalErrorType.E500);
+            return ApiResponse.error("INVALID_EMAIL_OR_PASSWORD", "이메일 또는 비밀번호가 일치하지 않습니다.");
         }
     }
 
     @PostMapping("/signup")
     public ApiResponse<?> signUp(@RequestBody SignUpRequest signUpRequest){
-        SignUpResponse signUpResponse = memberService.signUp(signUpRequest);
-        return ApiResponse.success(signUpResponse);
-
+        try{
+            SignUpResponse signUpResponse = memberService.signUp(signUpRequest);
+            return ApiResponse.success(signUpResponse);
+        }catch (Exception e){
+            return ApiResponse.error("DUPLICATE_EMAIL", "이미 존재하는 회원입니다");
+        }
     }
 }
