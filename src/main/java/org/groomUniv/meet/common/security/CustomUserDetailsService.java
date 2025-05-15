@@ -1,6 +1,8 @@
 package org.groomUniv.meet.common.security;
 
 import lombok.RequiredArgsConstructor;
+import org.groomUniv.meet.common.apiPayload.error.CoreException;
+import org.groomUniv.meet.common.apiPayload.error.GlobalErrorType;
 import org.groomUniv.meet.oauth.entity.Member;
 import org.groomUniv.meet.oauth.enums.Role;
 import org.groomUniv.meet.oauth.repository.MemberRepository;
@@ -19,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return memberRepository.findByEmail(username)
                 .map(this::createUserDetails)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new CoreException(GlobalErrorType.MEMBER_NOT_FOUND));
     }
 
 
