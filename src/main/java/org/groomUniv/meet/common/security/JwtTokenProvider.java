@@ -3,6 +3,7 @@ package org.groomUniv.meet.common.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,21 +21,29 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 60 * 60 * 1000L;       // 1시간
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 1주일
-    long now = (new Date()).getTime();
-    private final Key key;
+    private Key key;
 
+    @Value("${jwt.secret}")
+    String secret;
 
-    //application.yml에 저장한 secret값을 가져와서 key에 저장하기
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);    // secretKey (Base64로 인코딩된 문자열)를 디코딩하여 byte 배열로 변환
-        this.key = Keys.hmacShaKeyFor(keyBytes);    // 디코딩된 byte 배열을 사용하여 HMAC-SHA 알고리즘에 맞는 암호화 키 생성
+    @Value("${jwt.access-expiration-time}")
+    private long accessTokenExpirationTime;
+
+    @Value("${jwt.refresh-expiration-time}")
+    private long refreshTokenExpirationTime;
+
+    //application.yml에 저장한 secret 값을 가져와서 key에 저장하기
+    @PostConstruct      // 스프링 컨테이너가 빈을 생성하고, 모든 의존성 주입이 끝난 뒤 자동으로 호출되는 메서드, 주입된 값을 안전하게 사용 가능
+    public void init() {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);    // secretKey (Base64로 인코딩된 문자열)를 디코딩하여 byte 배열로 변환
+        key = Keys.hmacShaKeyFor(keyBytes);    // 디코딩된 byte 배열을 사용하여 HMAC-SHA 알고리즘에 맞는 암호화 키 생성
     }
+
 
     //Access Token 생성하기
     public String createAccessToken(String name, String authorities) {
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME); // 1시간
+        Date now = new Date();
+        Date accessTokenExpiresIn = new Date(now.getTime() + accessTokenExpirationTime); // 1시간
 
         return Jwts.builder()     // JWT 토큰을 생성하는 빌더 패턴
                 .setSubject(name)   // 토큰의 subject를 인증된 사용자 이름으로 설정
@@ -44,9 +53,11 @@ public class JwtTokenProvider {
                 .compact();     //토큰을 하나의 문자열로 생성
     }
 
+
     //Refresh Token 생성하기
     public String createRefreshToken() {
-        Date refreshTokenExpiresIn = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
+        Date now = new Date();
+        Date refreshTokenExpiresIn = new Date(now.getTime() + refreshTokenExpirationTime);
 
         return Jwts.builder()
                 .setExpiration(refreshTokenExpiresIn)
@@ -66,6 +77,7 @@ public class JwtTokenProvider {
         return new JwtToken("Bearer", createAccessToken(name, authorities), createRefreshToken());
     }
 
+
     //JWT 토큰을 복호화하여 토큰에 들어있는 정보를 꺼내기
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);   //Jwt 토큰을 복호화하여 claims에 저장
@@ -84,9 +96,8 @@ public class JwtTokenProvider {
 
         // principal은 사용자 정보, authorities는 사용자의 권한 정보를 포함
         return new UsernamePasswordAuthenticationToken(principal, "", authorities); // 인증 객체 반환
-
-
     }
+
 
     //토큰 유효성 검사
     public boolean validateToken(String token) {
@@ -109,6 +120,7 @@ public class JwtTokenProvider {
         return false;   // 예외가 발생하면 유효하지 않은 토큰
     }
 
+
     //accessToken을 파싱하여 claims를 추출하기
     private Claims parseClaims(String accessToken) {
         try{
@@ -121,6 +133,4 @@ public class JwtTokenProvider {
             return exception.getClaims();
         }
     }
-
-
 }
