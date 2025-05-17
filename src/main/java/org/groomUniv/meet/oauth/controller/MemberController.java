@@ -1,5 +1,6 @@
 package org.groomUniv.meet.oauth.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.groomUniv.meet.common.apiPayload.error.GlobalErrorType;
 import org.groomUniv.meet.common.apiPayload.response.ApiResponse;
@@ -20,7 +21,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public ApiResponse<?> login(@RequestBody LoginRequest loginRequest){
+    public ApiResponse<?> login(@Valid @RequestBody LoginRequest loginRequest){
         try{
             JwtToken jwtToken = memberService.login(loginRequest.email(), loginRequest.password());
             return ApiResponse.success(jwtToken);
@@ -30,7 +31,7 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public ApiResponse<?> signUp(@RequestBody SignUpRequest signUpRequest){
+    public ApiResponse<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
         try{
             SignUpResponse signUpResponse = memberService.signUp(signUpRequest);
             return ApiResponse.success(signUpResponse);
