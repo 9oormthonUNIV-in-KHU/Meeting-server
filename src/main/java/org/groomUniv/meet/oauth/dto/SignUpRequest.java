@@ -20,7 +20,7 @@ public record SignUpRequest(
         @Schema(description = "이름", example = "홍길동")
         String name
 ) {
-    public Member toEntity(String encodedPassword) {
+    public Member toMember(String encodedPassword) {
         return Member.builder()
                 .email(email)
                 .password(encodedPassword)

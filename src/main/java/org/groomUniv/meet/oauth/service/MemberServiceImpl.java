@@ -40,7 +40,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         String encodedPassword = passwordEncoder.encode(signUpRequest.password());
-        Member member = memberRepository.save(signUpRequest.toEntity(encodedPassword));
+        Member member = memberRepository.save(signUpRequest.toMember(encodedPassword));
         return SignUpResponse.of(member);
 
     }
