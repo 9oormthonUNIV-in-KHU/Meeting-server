@@ -2,24 +2,23 @@ package org.groomUniv.meet.common.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
-import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
-
+@Slf4j
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilterBean {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtTokenProvider jwtTokenProvider;
-
 
     private static final List<String> NO_AUTH_PATHS = List.of(
             "/api/member/signup",
@@ -27,24 +26,32 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     );
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println(path);
         // 인증이 필요 없는 경로는 필터 패스
         if (NO_AUTH_PATHS.contains(path)) {
-            System.out.println("No auth needed for path: " + path);
-            filterChain.doFilter(servletRequest, servletResponse);
+            log.info("No auth needed for path: {}", path);
+            filterChain.doFilter(request, response);
             return;
         }
 
-        String token = resolveToken((HttpServletRequest) servletRequest);  // header에서 jwt 토큰을 추출
-        if (token != null && jwtTokenProvider.validateToken(token)) {   // 토큰이 존재하고 유효할 경우
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);  // 토큰에서 Authentication 객체를 얻어
-            SecurityContextHolder.getContext().setAuthentication(authentication);   // Spring SecurityContext에 저장
+        String token = resolveToken(request);  // header에서 jwt 토큰을 추출
+        if (token != null) {   // 토큰이 존재하고 유효할 경우
+            if(jwtTokenProvider.validateToken(token)) {
+                Authentication authentication = jwtTokenProvider.getAuthentication(token);  // 토큰에서 Authentication 객체를 얻어
+                SecurityContextHolder.getContext().setAuthentication(authentication);   // Spring SecurityContext에 저장
+            }
+            else{
+                // 필터는 DispatcherServlet 이전에 동작하므로, 직접 JSON 형태로 응답을 만들어서 반환해야 함
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);    // 유효하지 않은 토큰: 401 Unauthorized 반환
+                response.setContentType("application/json;charset=UTF-8");  // 응답의 ContentType을 json으로 지정
+                response.getWriter().write("{\"error\": \"Invalid JWT token\"}");    // json 형식의 에러 메시지
+                return; // 요청 중단, 다음 필터로 전달하지 않음
+            }
+
         }
-        filterChain.doFilter(servletRequest, servletResponse);  // 다음 필터로 요청을 전달(이걸 호출하지 않으면 요청이 중간에서 끊겨버려서 다음 단계 진행 불가)
+        filterChain.doFilter(request, response);  // 다음 필터로 요청을 전달(이걸 호출하지 않으면 요청이 중간에서 끊겨버려서 다음 단계 진행 불가)
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -54,4 +61,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
         }
         return null;
     }
+
+
 }
