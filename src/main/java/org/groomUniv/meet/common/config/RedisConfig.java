@@ -2,12 +2,14 @@ package org.groomUniv.meet.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Configuration
 public class RedisConfig {
 
     @Value("${spring.redis.host}")
@@ -29,6 +31,7 @@ public class RedisConfig {
     }
 
     // RedisTemplate은 Redis에 데이터를 저장/조회/삭제하는 핵심 도구(커스터마이징을 통해 키/값 직렬화 방식 지정 가능)
+    // RedisTemplate 말고 RedisRepository(CrudRepository를 상속)를 쓰는 방법도 있음
     @Bean
     public RedisTemplate<String, String> redisTemplate() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();    // RedisTemplate 객체 생성(객체를 저장할 땐 Object로)
