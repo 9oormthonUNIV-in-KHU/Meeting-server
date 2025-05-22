@@ -55,11 +55,12 @@ public class JwtTokenProvider {
 
 
     //Refresh Token 생성하기
-    public String createRefreshToken() {
+    public String createRefreshToken(String name) {
         Date now = new Date();
         Date refreshTokenExpiresIn = new Date(now.getTime() + refreshTokenExpirationTime);
 
         return Jwts.builder()
+                .setSubject(name)
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
@@ -74,7 +75,7 @@ public class JwtTokenProvider {
 
         String name = authentication.getName();
 
-        return new JwtToken("Bearer", createAccessToken(name, authorities), createRefreshToken());
+        return new JwtToken("Bearer", createAccessToken(name, authorities), createRefreshToken(name));
     }
 
 
