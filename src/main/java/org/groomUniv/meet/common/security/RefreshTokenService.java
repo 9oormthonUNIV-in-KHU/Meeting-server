@@ -14,23 +14,23 @@ public class RefreshTokenService {
     @Value("${jwt.refresh-expiration-time}")
     private long refreshTokenExpirationTime;
 
-    private String getKey(String userId){
-        return "refresh_token:" + userId;
+    private String getKey(String username){
+        return "refresh_token:" + username;
     }
 
-    public void saveRefreshToken(String userId, String refreshToken) {
+    public void saveRefreshToken(String username, String refreshToken) {
         redisTemplate.opsForValue().set(
-                getKey(userId),
+                getKey(username),
                 refreshToken,
                 refreshTokenExpirationTime
         );
     }
 
-    public String getRefreshToken(String userId) {
-        return redisTemplate.opsForValue().get(getKey(userId));
+    public String getRefreshToken(String username) {
+        return redisTemplate.opsForValue().get(getKey(username));
     }
 
-    public void deleteRefreshToken(String userId) {
-        redisTemplate.delete(getKey(userId));
+    public void deleteRefreshToken(String username) {
+        redisTemplate.delete(getKey(username));
     }
 }
