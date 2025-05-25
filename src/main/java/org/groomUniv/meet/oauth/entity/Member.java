@@ -9,6 +9,7 @@ import org.groomUniv.meet.meeting.entity.MeetingGroup;
 @NoArgsConstructor
 @Entity
 @Getter
+@Data
 @Table(name = "member")
 public class Member {
 

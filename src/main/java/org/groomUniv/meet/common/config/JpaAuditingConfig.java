@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import java.util.Optional;
 
 @Configuration
-@EnableJpaAuditing
+
 // Spring이 CreatedBy에서 어떤 사용자를 넣을지 모르기 때문에 그걸 이 부분을 통해 찾아주려고 적는 Config 파일
 public class JpaAuditingConfig {
 

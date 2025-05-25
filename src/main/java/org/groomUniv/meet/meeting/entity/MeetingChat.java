@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.Date;
-
+@Data
 @Entity
 @NoArgsConstructor
 public class MeetingChat extends BaseEntity {

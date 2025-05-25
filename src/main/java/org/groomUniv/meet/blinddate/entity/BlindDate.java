@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Table(name = "blind_date")
-
+@Data
 
 public class BlindDate extends BaseEntity {
 

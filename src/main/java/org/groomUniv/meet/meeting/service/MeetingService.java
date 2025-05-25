@@ -1,9 +1,13 @@
 package org.groomUniv.meet.meeting.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.groomUniv.meet.meeting.dto.MeetingChatDto;
 import org.groomUniv.meet.meeting.dto.request.ConditionRequest;
 import org.groomUniv.meet.meeting.dto.response.SearchMeetingResponse;
+import org.groomUniv.meet.meeting.entity.Meeting;
+import org.groomUniv.meet.meeting.entity.MeetingChat;
 import org.groomUniv.meet.meeting.entity.MeetingGroup;
+import org.groomUniv.meet.meeting.repository.MeetingChatRepository;
 import org.groomUniv.meet.meeting.repository.MeetingGroupRepository;
 import org.groomUniv.meet.meeting.repository.MeetingRepository;
 import org.groomUniv.meet.oauth.entity.Member;
@@ -12,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,13 +27,16 @@ import java.util.stream.Collectors;
 @Slf4j
 @Transactional
 public class MeetingService {
-
+    private final MeetingRepository meetingRepository;
     private final MemberRepository memberRepository;
     private final MeetingGroupRepository meetingGroupRepository;
+    private final MeetingChatRepository meetingChatRepository;
 
-    public MeetingService(MemberRepository memberRepository, MeetingGroupRepository meetingGroupRepository) {
+    public MeetingService(MemberRepository memberRepository, MeetingGroupRepository meetingGroupRepository, MeetingChatRepository meetingChatRepository, MeetingRepository meetingRepository) {
         this.memberRepository = memberRepository;
         this.meetingGroupRepository = meetingGroupRepository;
+        this.meetingChatRepository = meetingChatRepository;
+        this.meetingRepository = meetingRepository;
     }
 
     //1. 멤버 ID 목록으로 새로운 미팅 그룹 생성
@@ -39,7 +47,7 @@ public class MeetingService {
         // 현재조합으로 이미 만들어진 그룹인지 확인
         List<MeetingGroup> allGroups = meetingGroupRepository.findAll();
 
-        for(MeetingGroup meetingGroup : allGroups) {
+        for (MeetingGroup meetingGroup : allGroups) {
             List<Long> groupMemberIds = meetingGroup.getMembers().stream()
                     .map(Member::getMemberId)
                     .sorted()
@@ -79,11 +87,10 @@ public class MeetingService {
     public SearchMeetingResponse searchMeeting(ConditionRequest request) {
 
 
-
         List<Long> myMemberIds = new ArrayList<>(request.getMemberIds());
         Collections.sort(myMemberIds);
 
-       // 모든 그룹 찾아오기
+        // 모든 그룹 찾아오기
         List<MeetingGroup> allGroups = meetingGroupRepository.findAll();
         // 내가 포함된 그룹 찾기 (현재 멤버들이 포함된 그룹)
         MeetingGroup myGroup = allGroups.stream()
@@ -98,7 +105,6 @@ public class MeetingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 멤버들로 구성된 그룹이 존재하지 않습니다."));
 
 
-
         // 상대방 매칭 과정
         MeetingGroup matchedGroup = allGroups.stream()
                 .filter(g -> !g.getId().equals(myGroup.getId())) // 자기 자신 제외
@@ -108,7 +114,7 @@ public class MeetingService {
                 .findFirst()
                 .orElse(null);
 
-        if(matchedGroup == null) {
+        if (matchedGroup == null) {
             throw new IllegalArgumentException("매치 성사 안되었습니다");
         }
 
@@ -134,5 +140,43 @@ public class MeetingService {
         );
 
     }
-}
 
+
+    public MeetingChatDto save(MeetingChatDto dto) {
+        // 1) 미팅 존재 확인
+        Meeting meeting = meetingRepository.findById(dto.getMeetingId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 미팅 ID: " + dto.getMeetingId()));
+
+        // 2) 엔티티 생성 및 저장
+        MeetingChat chat = new MeetingChat();
+        chat.setMeeting(meeting);
+        chat.setSenderId(dto.getSenderId().toString());
+        chat.setMessage(dto.getMessage());
+        // createdAt 은 BaseEntity에서 자동 설정
+
+        MeetingChat saved = meetingChatRepository.save(chat);
+
+        // 3) DTO 반환
+        return new MeetingChatDto(
+                saved.getMeeting().getMeetingId(),
+                Long.valueOf(saved.getSenderId()),
+                saved.getMessage(),
+                saved.getCreatedAt()
+        );
+    }
+
+    public List<MeetingChatDto> loadHistory(Long meetingId) {
+        if (!meetingRepository.existsById(meetingId)) {
+            throw new IllegalArgumentException("존재하지 않는 미팅 ID: " + meetingId);
+        }
+        return meetingChatRepository.findAllByMeeting_IdOrderByCreatedAtAsc(meetingId)
+                .stream()
+                .map(c -> new MeetingChatDto(
+                        c.getMeeting().getMeetingId(),
+                        Long.valueOf(c.getSenderId()),
+                        c.getMessage(),
+                        c.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+    }
+}

@@ -56,14 +56,13 @@ dependencies {
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
 
 
-}
+
 
 
 	// 채팅 - kafka
 //	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
 }
 
 tasks.named('test') {

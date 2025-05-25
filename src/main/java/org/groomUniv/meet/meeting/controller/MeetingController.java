@@ -1,22 +1,24 @@
 package org.groomUniv.meet.meeting.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.groomUniv.meet.chat.service.KafkaProducer;
+import org.groomUniv.meet.meeting.dto.MeetingChatDto;
 import org.groomUniv.meet.meeting.dto.request.ConditionRequest;
 import org.groomUniv.meet.meeting.dto.request.CreateMeetingGroupRequest;
 import org.groomUniv.meet.meeting.dto.response.SearchMeetingResponse;
 import org.groomUniv.meet.meeting.entity.MeetingGroup;
 import org.groomUniv.meet.meeting.service.MeetingService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/meeting")
 @RequiredArgsConstructor
 public class MeetingController {
-
+    private final KafkaProducer<MeetingChatDto> producer;
     private final MeetingService meetingService;
 
     @PostMapping("/group")
@@ -35,5 +37,15 @@ public class MeetingController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+    @MessageMapping("/chat")
+    public void send(MeetingChatDto dto) {
+        MeetingChatDto saved = meetingService.save(dto);
+        producer.sendMessage("meeting-chat-topic", saved);
+    }
+
+    @GetMapping("/chat/{meetingId}")
+    public ResponseEntity<List<MeetingChatDto>> history(@PathVariable Long meetingId) {
+        return ResponseEntity.ok(meetingService.loadHistory(meetingId));
     }
 }
