@@ -14,7 +14,7 @@ public interface BlindDateChatRepository extends JpaRepository<BlindDateChat, Lo
     Optional<BlindDateChat> findById(Long blindDataChatId);
 
     // 특정 블라인드 채팅에 속한 모든 채팅 시간순으로
-    List<BlindDateChat> findAllByBlindDateOrderByTimestampAsc(BlindDate blindDate);
+    //List<BlindDateChat> findAllByBlindDateOrderByTimestampAsc(BlindDate blindDate);
     // 읽지 않은 메세지들 가져오기
     List<BlindDateChat> findAllByBlindDateAndReadStatusFalse(BlindDate blindDate);
     // 특정 sender 기반으로 조회하기

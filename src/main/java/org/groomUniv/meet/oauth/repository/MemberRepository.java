@@ -15,6 +15,8 @@ Optional<Member> findByName(String name);
 //학교별 모든 멤버 가져오는
 
     Optional<Member> findAllBySchool(School school);
+
+    boolean existsByEmail(String email);
 }
 // 간단한 사용법
 //School school = schoolRepository.findByName("경희대학교").orElseThrow();

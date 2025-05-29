@@ -12,21 +12,21 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
-
 public class Meeting extends BaseEntity {
 
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Long meetingId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long meetingId;
 
 
-private String meetingDetails;
+    private String meetingDetails;
 
 
-@OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL)
-private List<MeetingChat> chats = new ArrayList<>();
+    @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL)
+    private List<MeetingChat> chats = new ArrayList<>();
 }
 
