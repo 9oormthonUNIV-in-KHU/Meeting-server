@@ -1,15 +1,23 @@
 package org.groomUniv.meet.oauth.entity;
 
 import jakarta.persistence.*;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.groomUniv.meet.meeting.entity.MeetingGroup;
+
 import lombok.*;
 import org.groomUniv.meet.oauth.enums.Role;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @NoArgsConstructor
 @Entity
 @Getter
+@Data
 @Table(name = "member")
 @Builder
 @AllArgsConstructor
@@ -35,7 +43,8 @@ private String password;
 
 private String name;
 private String image;
-
+//사는 지역
+private String location;
 private Long height;
 private Long age;
 private String biography;
@@ -43,8 +52,20 @@ private String major;
 
 private boolean emailVerified;
 
+
+    // MeetingGroup 때문에 추가함
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_group_id")
+    private MeetingGroup meetingGroup;
+
+    public void assignMeetingGroup(MeetingGroup group) {
+        this.meetingGroup = group;
+    }
+
 @ElementCollection(fetch = FetchType.EAGER)
 @Enumerated(EnumType.STRING)
 private List<Role> roles = new ArrayList<>();
+
 
 }

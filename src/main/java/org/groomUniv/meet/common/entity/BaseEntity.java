@@ -27,3 +27,11 @@ public class BaseEntity {
 
 
 }
+// JPA Auditing 설명
+//@CreatedDate: 엔터티가 처음 생성된 날짜를 자동으로 기록합니다.
+//
+//@LastModifiedDate: 엔터티가 마지막으로 수정된 날짜를 자동으로 기록합니다.
+//
+//@CreatedBy: 엔터티를 처음 생성한 사용자를 자동으로 기록합니다.
+//
+//@LastModifiedBy: 엔터티를 마지막으로 수정한 사용자를 자동으로 기록합니다.
