@@ -123,15 +123,19 @@ public class JwtTokenProvider {
 
 
     //accessToken을 파싱하여 claims를 추출하기
-    private Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String token) {
         try{
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody();
         }catch (ExpiredJwtException exception){     // 토큰이 만료되었을 경우 예외에서 claims만 추출하여 반환
             return exception.getClaims();
         }
+    }
+
+    public String getUsername(String refreshToken) {
+        return parseClaims(refreshToken).getSubject();
     }
 }
